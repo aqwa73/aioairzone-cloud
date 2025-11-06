@@ -9,18 +9,6 @@ from typing import TYPE_CHECKING, Any
 from .common import OperationMode, parse_bool, parse_int, parse_str, parse_float
 from .const import (
     API_AQ_ACTIVE,
-    API_AQ_PM_1,
-    API_AQ_PM_2P5,
-    API_AQ_PM_10,
-    API_AQ_CO2,
-    API_AQ_TVOC,
-    API_AQ_HUMIDITY,
-    API_AQ_TEMP,
-    API_AQ_TEMP_CELSIUS,
-    API_AQ_PRESENT,
-    API_AQ_QUALITY,
-    API_AQ_QUALITY_LEVELS,
-    API_AQ_SCORE,
     API_AUTO_MODE,
     API_CONFIG,
     API_DEVICE_ID,
@@ -36,17 +24,6 @@ from .const import (
     API_WARNINGS,
     API_WS_CONNECTED,
     AZD_AQ_ACTIVE,
-    AZD_AQ_QUALITY,
-    AZD_AQ_SCORE,
-    AZD_AQ_PM_1,
-    AZD_AQ_PM_2P5,
-    AZD_AQ_PM_10,
-    AZD_AQ_CO2,
-    AZD_AQ_TVOC,
-    AZD_AQ_HUMIDITY,
-    AZD_AQ_TEMP,
-    AZD_AQ_PRESENT,
-
     AZD_AVAILABLE,
     AZD_DOUBLE_SET_POINT,
     AZD_DUAL_SP_CONF,
@@ -80,18 +57,8 @@ class Device(Entity):
         super().__init__()
 
         self.air_quality: AirQuality | None = None
-        self.auto_mode: OperationMode | None = None
         self.aq_active: bool | None = None
-        self.aq_pm_1: int | None = None
-        self.aq_pm_2p5: int | None = None
-        self.aq_pm_10: int | None = None
-        self.aq_co2: int | None = None
-        self.aq_tvoc: int | None = None
-        self.aq_humidity: int | None = None
-        self.aq_temp: float | None = None
-        self.aq_present: bool | None = None
-        self.aq_quality: str | None = None
-        self.aq_score: int | None = None
+        self.auto_mode: OperationMode | None = None
         self.double_set_point: bool | None = None
         self.dual_sp_conf: bool | None = None
         self.errors: list[str] = []
@@ -143,48 +110,6 @@ class Device(Entity):
         if aq_active is not None:
             data[AZD_AQ_ACTIVE] = aq_active
 
-        aq_quality = self.get_aq_quality()
-        if aq_quality is not None:
-            for key, value in API_AQ_QUALITY_LEVELS.items():
-                if aq_quality == key:
-                    data[AZD_AQ_QUALITY] = value
-
-        aq_score = self.get_aq_score()
-        if aq_score is not None:
-            data[AZD_AQ_SCORE] = aq_score
-
-        aq_pm_1 = self.get_aq_pm_1()
-        if aq_pm_1 is not None:
-            data[AZD_AQ_PM_1] = aq_pm_1
-
-        aq_pm_2p5 = self.get_aq_pm_2p5()
-        if aq_pm_2p5 is not None:
-            data[AZD_AQ_PM_2P5] = aq_pm_2p5
-
-        aq_pm_10 = self.get_aq_pm_10()
-        if aq_pm_10 is not None:
-            data[AZD_AQ_PM_10] = aq_pm_10
-
-        aq_co2 = self.get_aq_co2()
-        if aq_co2 is not None:
-            data[AZD_AQ_CO2] = aq_co2
-
-        aq_tvoc = self.get_aq_tvoc()
-        if aq_tvoc is not None:
-            data[AZD_AQ_TVOC] = aq_tvoc
-
-        aq_humidity = self.get_aq_humidity()
-        if aq_humidity is not None:
-            data[AZD_AQ_HUMIDITY] = aq_humidity
-
-        aq_temp = self.get_aq_temp()
-        if aq_temp is not None:
-            data[AZD_AQ_TEMP] = aq_temp
-
-        aq_present = self.get_aq_present()
-        if aq_present is not None:
-            data[AZD_AQ_PRESENT] = aq_present
-
         dual_sp_conf = self.get_dual_sp_conf()
         if dual_sp_conf is not None:
             data[AZD_DUAL_SP_CONF] = dual_sp_conf
@@ -220,75 +145,6 @@ class Device(Entity):
         if self.air_quality is not None:
             return self.air_quality.aq_active
         return self.aq_active
-
-    def get_aq_quality(self) -> str | None:
-        """Return HVAC device Air Quality quality."""
-        if self.air_quality is not None:
-            return self.air_quality.aq_quality
-        return self.aq_quality
-
-    def get_aq_status(self) -> int | None:
-        """Return HVAC device Air Quality index."""
-        aq_status = self.get_aq_status()
-        if aq_status is not None:
-            for key, value in API_AQ_STATUS.items():
-                if aq_status == key:
-                    return value
-        return None
-
-    def get_aq_score(self) -> int | None:
-        """Return HVAC device Air Quality SCORE."""
-        if self.air_quality is not None:
-            return self.air_quality.aq_score
-        return self.aq_score
-
-    def get_aq_pm_1(self) -> int | None:
-        """Return HVAC device Air Quality PM 1."""
-        if self.air_quality is not None:
-            return self.air_quality.aq_pm_1
-        return self.aq_pm_1
-
-    def get_aq_pm_2p5(self) -> int | None:
-        """Return HVAC device Air Quality PM 2.5."""
-        if self.air_quality is not None:
-            return self.air_quality.aq_pm_2p5
-        return self.aq_pm_2p5
-
-    def get_aq_pm_10(self) -> int | None:
-        """Return HVAC device Air Quality PM 10."""
-        if self.air_quality is not None:
-            return self.air_quality.aq_pm_10
-        return self.aq_pm_10
-
-    def get_aq_co2(self) -> int | None:
-        """Return HVAC device Air Quality CO2."""
-        if self.air_quality is not None:
-            return self.air_quality.aq_co2
-        return self.aq_co2
-
-    def get_aq_tvoc(self) -> int | None:
-        """Return HVAC device Air Quality TVOC."""
-        if self.air_quality is not None:
-            return self.air_quality.aq_tvoc
-        return self.aq_tvoc
-
-    def get_aq_temp(self) -> int | None:
-        """Return HVAC device Air Quality Temperature."""
-        if self.air_quality is not None:
-            return self.air_quality.aq_temp
-        return self.aq_temp
-
-    def get_aq_humidity(self) -> int | None:
-        """Return HVAC device Air Quality Humidity."""
-        if self.air_quality is not None:
-            return self.air_quality.aq_humidity
-        return self.aq_humidity
-
-    def get_aq_present(self) -> bool | None:
-        """Return HVAC device Air Quality present."""
-        if self.air_quality is not None:
-            return self.air_quality.aq_present
-        return self.aq_present
 
     def get_available(self) -> bool:
         """Return availability status."""
@@ -378,57 +234,16 @@ class Device(Entity):
         """Update Device data."""
         data = update.get_data()
 
+        aq_active = parse_bool(data.get(API_AQ_ACTIVE))
+        if aq_active is not None:
+            self.aq_active = aq_active
+
         is_connected = parse_bool(data.get(API_IS_CONNECTED))
         if is_connected is not None:
             self.is_connected = is_connected
         ws_connected = parse_bool(data.get(API_WS_CONNECTED))
         if ws_connected is not None:
             self.ws_connected = ws_connected
-
-        aq_active = parse_bool(data.get(API_AQ_ACTIVE))
-        if aq_active is not None:
-            self.aq_active = aq_active
-
-        aq_pm_1 = parse_int(data.get(API_AQ_PM_1))
-        if aq_pm_1 is not None:
-            self.aq_pm_1 = aq_pm_1
-
-        aq_pm_2p5 = parse_int(data.get(API_AQ_PM_2P5))
-        if aq_pm_2p5 is not None:
-            self.aq_pm_2p5 = aq_pm_2p5
-
-        aq_pm_10 = parse_int(data.get(API_AQ_PM_10))
-        if aq_pm_10 is not None:
-            self.aq_pm_10 = aq_pm_10
-
-        aq_co2 = parse_int(data.get(API_AQ_CO2))
-        if aq_co2 is not None:
-            self.aq_co2 = aq_co2
-
-        aq_tvoc = parse_int(data.get(API_AQ_TVOC))
-        if aq_tvoc is not None:
-            self.aq_tvoc = aq_tvoc
-
-        aq_humidity = parse_int(data.get(API_AQ_HUMIDITY))
-        if aq_humidity is not None:
-            self.aq_humidity = aq_humidity
-
-        aq_temp = data.get(API_AQ_TEMP)
-        if aq_temp is not None:
-            aq_temp = parse_float(aq_temp.get(API_AQ_TEMP_CELSIUS))
-            self.aq_temp = aq_temp
-
-        aq_present = parse_bool(data.get(API_AQ_PRESENT))
-        if aq_present is not None:
-            self.aq_present = aq_present
-
-        aq_quality = parse_str(data.get(API_AQ_QUALITY))
-        if aq_quality is not None:
-            self.aq_quality = aq_quality
-
-        aq_score = parse_str(data.get(API_AQ_SCORE))
-        if aq_score is not None:
-            self.aq_score = aq_score
 
         auto_mode = data.get(API_AUTO_MODE)
         if auto_mode is not None:
